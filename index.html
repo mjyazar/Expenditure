@@ -13,7 +13,7 @@
     <!-- Application Structure Plan: A two-tab single-page application. The first tab (2024-2025 Review) and second tab (2025-2026 Forecast) are the primary navigation. Within each primary tab, a secondary navigation allows the user to switch between a 'Dashboard' view (with KPIs and charts) and a 'Detailed Report' view (with formatted text). This hierarchical structure keeps the interface clean while allowing users to choose their desired level of detail, moving from a quick visual summary to an in-depth textual analysis. -->
     <!-- Visualization & Content Choices: 
         - Report Info: Key Metrics -> Goal: Inform -> Viz/Method: KPI Cards, Donut/Bar Charts (Chart.js) -> Interaction: Hover -> Justification: High-level visual summary.
-        - Report Info: Detailed Text Analysis -> Goal: Explain -> Viz/Method: Formatted Text Blocks (HTML/Tailwind Prose) -> Interaction: None -> Justification: Provides the full narrative context and detailed breakdown from the original report.
+        - Report Info: Detailed Text Analysis -> Goal: Explain -> Viz/Method: Structured cards and definition lists (HTML/Tailwind) -> Interaction: None -> Justification: Provides a clean, professional, and highly readable layout for the narrative report, improving on the previous clustered text.
     -->
     <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
     <style>
@@ -56,9 +56,6 @@
         .sub-nav-btn:not(.active):hover {
             color: #334155; /* slate-700 */
         }
-        .prose {
-            max-width: none;
-        }
     </style>
 </head>
 <body class="text-slate-800">
@@ -89,77 +86,48 @@
                         <p class="mt-1 text-md text-slate-500">A visual summary of all expenses incurred during the past academic year.</p>
                     </div>
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                            <h3 class="font-semibold text-slate-600">Total Expenditure</h3>
-                            <p class="text-4xl font-bold mt-2 kpi-value">€39,032.57</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                            <h3 class="font-semibold text-slate-600">Fixed Costs</h3>
-                            <p class="text-4xl font-bold mt-2 kpi-value">€28,045.00</p>
-                            <p class="text-sm text-slate-500 mt-1">Tuition, Rent & Fees</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                            <h3 class="font-semibold text-slate-600">Variable Living Expenses</h3>
-                            <p class="text-4xl font-bold mt-2 kpi-value">€11,047.57</p>
-                            <p class="text-sm text-slate-500 mt-1">Based on logged expenses</p>
-                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center"><h3 class="font-semibold text-slate-600">Total Expenditure</h3><p class="text-4xl font-bold mt-2 kpi-value">€39,032.57</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center"><h3 class="font-semibold text-slate-600">Fixed Costs</h3><p class="text-4xl font-bold mt-2 kpi-value">€28,045.00</p><p class="text-sm text-slate-500 mt-1">Tuition, Rent & Fees</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center"><h3 class="font-semibold text-slate-600">Variable Living Expenses</h3><p class="text-4xl font-bold mt-2 kpi-value">€11,047.57</p><p class="text-sm text-slate-500 mt-1">Based on logged expenses</p></div>
                     </div>
                     <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
-                        <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-4 text-center">Living Expense Categories</h3>
-                            <div class="chart-container">
-                                <canvas id="categoriesChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-4 text-center">Total Cost Breakdown</h3>
-                             <div class="chart-container">
-                                <canvas id="breakdownChart"></canvas>
-                            </div>
-                            <div class="mt-4 text-center border-t pt-4">
-                                 <h4 class="font-semibold text-slate-600">Key Insight</h4>
-                                 <p class="text-2xl font-bold mt-2 kpi-value">€78.79</p>
-                                 <p class="text-sm text-slate-500">Average Weekly Grocery Spend</p>
-                            </div>
-                        </div>
+                        <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-center">Living Expense Categories</h3><div class="chart-container"><canvas id="categoriesChart"></canvas></div></div>
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-center">Total Cost Breakdown</h3><div class="chart-container"><canvas id="breakdownChart"></canvas></div><div class="mt-4 text-center border-t pt-4"><h4 class="font-semibold text-slate-600">Key Insight</h4><p class="text-2xl font-bold mt-2 kpi-value">€78.79</p><p class="text-sm text-slate-500">Average Weekly Grocery Spend</p></div></div>
                     </div>
                 </div>
 
-                <div id="review-report-content" class="hidden bg-white p-6 sm:p-8 rounded-lg shadow-md">
-                    <article class="prose lg:prose-lg">
-                        <h2>2024-2025 Academic Year Expense Summary</h2>
-                        <h3>Overall Financial Summary</h3>
-                        <p>The total calculated cost for the 2024-2025 academic year amounts to <strong>€39,032.57</strong>. This figure encompasses all major educational and living costs.</p>
-                        <p>The expenditure can be broken down into two main types:</p>
-                        <ul>
-                            <li><strong>Fixed Costs:</strong> These are major, predictable expenses.
-                                <ul>
-                                    <li>Tuition Fee: €19,600.00</li>
-                                    <li>Total Rent: €8,085.00</li>
-                                    <li>Application Fee: €300.00</li>
-                                    <li><strong>Sub-total Fixed Costs: €28,045.00</strong></li>
-                                </ul>
-                            </li>
-                            <li><strong>Variable Living Expenses:</strong> These costs cover day-to-day living and are based on the detailed expense log provided.
-                                <ul>
-                                    <li>Total Logged Expenses: €11,047.57</li>
-                                    <li>Of this amount, €778.30 was personally covered for non-essential items, with the remaining €10,269.27 covered by sponsorship.</li>
-                                </ul>
-                            </li>
-                        </ul>
-                        <h3>Analysis of Living Expenses</h3>
-                        <p>A closer look at the variable living expenses reveals the following patterns:</p>
-                        <h4>Spending by Category</h4>
-                        <ul>
-                            <li><strong>Groceries:</strong> At €3,269.61, this was the largest category. Considering the approximately 41.5 weeks spent in the Netherlands, this averages to €78.79 per week.</li>
-                            <li><strong>Other expenses:</strong> This category totals €2,464.12 and includes a wide range of items.</li>
-                            <li><strong>Transport:</strong> Amounting to €2,221.34, this includes local transport and flights.</li>
-                            <li><strong>Memberships & Fees:</strong> This €830.68 includes gym memberships, sports clubs, etc.</li>
-                            <li><strong>Insurance:</strong> Health and liability insurance totaled €540.49 for the year.</li>
-                        </ul>
-                        <h4>Monthly Spending Patterns</h4>
-                        <p>Expenditure was not uniform throughout the year. Spending was highest in the initial months (August-September 2024), reflecting one-time setup costs. Spending dips correspond with periods of travel back home.</p>
-                    </article>
+                <div id="review-report-content" class="hidden">
+                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-slate-800 text-center">2024-2025 Academic Year Expense Summary</h2>
+                        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-slate-700 border-b pb-2">Overall Financial Summary</h3>
+                                <p class="my-4 text-slate-600">The total cost for the academic year was <strong>€39,032.57</strong>, covering all educational and living costs.</p>
+                                <dl class="space-y-3 mt-4">
+                                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-md"><dt class="text-slate-500">Fixed Costs Total</dt><dd class="font-bold text-lg text-sky-600">€28,045.00</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Tuition Fee</dt><dd class="font-semibold">€19,600.00</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Total Rent</dt><dd class="font-semibold">€8,085.00</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Application Fee</dt><dd class="font-semibold">€300.00</dd></div>
+                                    
+                                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-md"><dt class="text-slate-500">Variable Expenses Total</dt><dd class="font-bold text-lg text-sky-600">€11,047.57</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Covered by Sponsorship</dt><dd class="font-semibold">€10,269.27</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Personally Covered</dt><dd class="font-semibold">€778.30</dd></div>
+                                </dl>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-slate-700 border-b pb-2">Analysis of Living Expenses</h3>
+                                <p class="my-4 text-slate-600">Spending was highest in the initial months due to setup costs. Dips in spending correspond with travel periods.</p>
+                                <div class="space-y-3 mt-4">
+                                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-md"><dt class="font-semibold text-slate-600">Top Spending Categories</dt><dd></dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Groceries (Avg. €78.79/week)</dt><dd class="font-semibold">€3,269.61</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Other expenses</dt><dd class="font-semibold">€2,464.12</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Transport</dt><dd class="font-semibold">€2,221.34</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Memberships & Fees</dt><dd class="font-semibold">€830.68</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Insurance</dt><dd class="font-semibold">€540.49</dd></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -171,77 +139,50 @@
                 </nav>
 
                 <div id="forecast-dashboard-content">
-                    <div class="text-center mb-8">
-                        <h2 class="text-2xl font-bold text-slate-800">2025-2026 Forecast Dashboard</h2>
-                        <p class="mt-1 text-md text-slate-500">An estimated visual budget for the upcoming 10.5-month period.</p>
-                    </div>
+                    <div class="text-center mb-8"><h2 class="text-2xl font-bold text-slate-800">2025-2026 Forecast Dashboard</h2><p class="mt-1 text-md text-slate-500">An estimated visual budget for the upcoming 10.5-month period.</p></div>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
-                            <h3 class="font-semibold text-slate-600">Est. Total Expenditure (10.5 mo)</h3>
-                            <p class="text-4xl font-bold mt-2 kpi-value">€35,771.03</p>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-4 text-center">Projected Monthly Budget</h3>
-                            <div class="flex flex-wrap justify-around items-center text-center gap-4">
-                                <div><p class="font-semibold text-slate-600">Living</p><p class="text-3xl font-bold mt-1 kpi-value">€861.05</p></div>
-                                <div class="text-2xl font-light text-slate-400">+</div>
-                                <div><p class="font-semibold text-slate-600">Rent</p><p class="text-3xl font-bold mt-1 kpi-value">€660.00</p></div>
-                                <div class="text-2xl font-light text-slate-400">=</div>
-                                <div><p class="font-semibold text-slate-600">Total</p><p class="text-3xl font-bold mt-1 kpi-value">€1,521.05</p></div>
-                            </div>
-                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center"><h3 class="font-semibold text-slate-600">Est. Total Expenditure (10.5 mo)</h3><p class="text-4xl font-bold mt-2 kpi-value">€35,771.03</p></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-center">Projected Monthly Budget</h3><div class="flex flex-wrap justify-around items-center text-center gap-4"><div><p class="font-semibold text-slate-600">Living</p><p class="text-3xl font-bold mt-1 kpi-value">€861.05</p></div><div class="text-2xl font-light text-slate-400">+</div><div><p class="font-semibold text-slate-600">Rent</p><p class="text-3xl font-bold mt-1 kpi-value">€660.00</p></div><div class="text-2xl font-light text-slate-400">=</div><div><p class="font-semibold text-slate-600">Total</p><p class="text-3xl font-bold mt-1 kpi-value">€1,521.05</p></div></div></div>
                     </div>
                      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-4 text-center">Forecasted Cost Breakdown</h3>
-                             <div class="chart-container max-w-md mx-auto">
-                                <canvas id="forecastBreakdownChart"></canvas>
-                            </div>
-                        </div>
-                        <div class="bg-white p-6 rounded-lg shadow-md">
-                            <h3 class="text-xl font-semibold mb-2">How We Calculated The Forecast</h3>
-                            <p class="text-slate-600 mb-4">To create a realistic budget, we started with last year's spending and made adjustments to exclude large, non-recurring purchases.</p>
-                            <ul class="space-y-3">
-                                <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">1.</span><div><h4 class="font-semibold">Started with 2024-25 Living Expenses</h4><p class="text-slate-500 text-sm">€11,047.57</p></div></li>
-                                <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">2.</span><div><h4 class="font-semibold">Removed One-Off Purchases</h4><p class="text-slate-500 text-sm">Excluded MacBook, bike, etc. (-€1,576.01)</p></div></li>
-                                 <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">3.</span><div><h4 class="font-semibold">Calculated Monthly Average</h4><p class="text-slate-500 text-sm">Resulted in a recurring monthly average of €861.05</p></div></li>
-                                 <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">4.</span><div><h4 class="font-semibold">Projected for 10.5 Months</h4><p class="text-slate-500 text-sm">This average was multiplied by 10.5 to get the final living expense forecast.</p></div></li>
-                            </ul>
-                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-4 text-center">Forecasted Cost Breakdown</h3><div class="chart-container max-w-md mx-auto"><canvas id="forecastBreakdownChart"></canvas></div></div>
+                        <div class="bg-white p-6 rounded-lg shadow-md"><h3 class="text-xl font-semibold mb-2">How We Calculated The Forecast</h3><p class="text-slate-600 mb-4">To create a realistic budget, we started with last year's spending and made adjustments to exclude large, non-recurring purchases.</p><ul class="space-y-3"><li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">1.</span><div><h4 class="font-semibold">Started with 2024-25 Living Expenses</h4><p class="text-slate-500 text-sm">€11,047.57</p></div></li><li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">2.</span><div><h4 class="font-semibold">Removed One-Off Purchases</h4><p class="text-slate-500 text-sm">Excluded MacBook, bike, etc. (-€1,576.01)</p></div></li><li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">3.</span><div><h4 class="font-semibold">Calculated Monthly Average</h4><p class="text-slate-500 text-sm">Resulted in a recurring monthly average of €861.05</p></div></li><li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">4.</span><div><h4 class="font-semibold">Projected for 10.5 Months</h4><p class="text-slate-500 text-sm">This average was multiplied by 10.5 to get the final living expense forecast.</p></div></li></ul></div>
                     </div>
                 </div>
 
-                <div id="forecast-report-content" class="hidden bg-white p-6 sm:p-8 rounded-lg shadow-md">
-                     <article class="prose lg:prose-lg">
-                        <h2>2025-2026 Academic Year Expense Guesstimate (10.5 Months)</h2>
-                        <h3>Overall Estimated Financial Forecast</h3>
-                        <p>The estimated total expenditure for the 10.5-month period from late September 2025 to early July 2026 is <strong>€35,771.03</strong>.</p>
-                        <p>This forecast is based on the following components:</p>
-                        <ul>
-                            <li><strong>Fixed Costs for the Period:</strong>
-                                <ul>
-                                    <li>Tuition Fee: €19,800.00</li>
-                                    <li>Rent & Utilities (10.5 months): €6,930.00 (€660/month * 10.5)</li>
-                                    <li><strong>Sub-total Fixed Costs: €26,730.00</strong></li>
-                                </ul>
-                            </li>
-                            <li><strong>Estimated Living Expenses (10.5 months): €9,041.03</strong></li>
-                        </ul>
-                        <h3>Derivation of Estimated Living Expenses</h3>
-                        <p>To create a realistic forecast, we have adjusted last year's spending to exclude significant one-time purchases and prorated the result for 10.5 months.</p>
-                        <ol>
-                            <li><strong>Starting Point:</strong> Total logged expenses from 2024-25 were €11,047.57.</li>
-                            <li><strong>Exclusions:</strong> We removed one-off costs like the MacBook, bike, and initial home setup (-€1,576.01).</li>
-                            <li><strong>Base Recurring Expenses:</strong> This leaves a base of €9,471.56 over 11 months, giving an average of €861.05 per month.</li>
-                            <li><strong>10.5-Month Forecast:</strong> Projecting this monthly average over a 10.5-month period gives the estimated living expense total of €9,041.03.</li>
-                        </ol>
-                        <h3>Projected Monthly Budget</h3>
-                        <p>Based on this forecast, you can plan your monthly budget as follows:</p>
-                        <ul>
-                            <li><strong>Average Monthly Living Expenses: €861.05</strong> (This is your estimated budget for groceries, transport, insurance, personal care, entertainment, etc.)</li>
-                            <li><strong>Average Total Monthly Cost (including rent/utilities): €1,521.05</strong> (€861.05 for living + €660 for rent/utilities)</li>
-                        </ul>
-                     </article>
+                <div id="forecast-report-content" class="hidden">
+                    <div class="bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                        <h2 class="text-2xl font-bold text-slate-800 text-center">2025-2026 Expense Guesstimate (10.5 Months)</h2>
+                        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div>
+                                <h3 class="text-xl font-semibold text-slate-700 border-b pb-2">Overall Estimated Forecast</h3>
+                                <p class="my-4 text-slate-600">The estimated total expenditure for the 10.5-month period is <strong>€35,771.03</strong>.</p>
+                                <dl class="space-y-3 mt-4">
+                                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-md"><dt class="text-slate-500">Fixed Costs Total (10.5 mo)</dt><dd class="font-bold text-lg text-sky-600">€26,730.00</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Tuition Fee</dt><dd class="font-semibold">€19,800.00</dd></div>
+                                    <div class="flex justify-between items-center pl-4"><dt class="text-slate-500">Rent & Utilities</dt><dd class="font-semibold">€6,930.00</dd></div>
+                                    
+                                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-md"><dt class="text-slate-500">Est. Living Expenses (10.5 mo)</dt><dd class="font-bold text-lg text-sky-600">€9,041.03</dd></div>
+                                </dl>
+                                <h3 class="text-xl font-semibold text-slate-700 border-b pb-2 mt-8">Projected Monthly Budget</h3>
+                                <dl class="space-y-3 mt-4">
+                                    <div class="flex justify-between items-center"><dt class="text-slate-500">Avg. Monthly Living Expenses</dt><dd class="font-semibold">€861.05</dd></div>
+                                    <div class="flex justify-between items-center"><dt class="text-slate-500">Avg. Monthly Rent & Utilities</dt><dd class="font-semibold">€660.00</dd></div>
+                                    <div class="flex justify-between items-center bg-slate-50 p-3 rounded-md"><dt class="text-slate-500">Avg. Total Monthly Cost</dt><dd class="font-bold text-lg text-sky-600">€1,521.05</dd></div>
+                                </dl>
+                            </div>
+                            <div>
+                                <h3 class="text-xl font-semibold text-slate-700 border-b pb-2">Derivation of Estimate</h3>
+                                <p class="my-4 text-slate-600">The forecast was derived by adjusting last year's data for non-recurring costs.</p>
+                                <ol class="list-decimal list-inside space-y-4 mt-4 text-slate-600">
+                                    <li><strong>Starting Point:</strong> Began with the total logged expenses from 2024-25 (€11,047.57).</li>
+                                    <li><strong>Exclusions:</strong> Removed one-off costs like the MacBook, bike, and initial home setup, totaling -€1,576.01.</li>
+                                    <li><strong>Base Calculation:</strong> This left a base of €9,471.56 in recurring expenses over 11 months, yielding a monthly average of €861.05.</li>
+                                    <li><strong>Final Forecast:</strong> The monthly average was projected over 10.5 months to arrive at the final living expense estimate of €9,041.03.</li>
+                                </ol>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
         </main>
@@ -350,8 +291,5 @@
             initReviewCharts();
         });
     </script>
-
-
-
 </body>
 </html>
