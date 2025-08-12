@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Expense Report</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Chosen Palette: Warm Neutrals (Slate, Stone, Sky) -->
+    <!-- Application Structure Plan: A two-tab single-page application. The first tab (2024-2025 Review) and second tab (2025-2026 Forecast) are the primary navigation. Within each primary tab, a secondary navigation allows the user to switch between a 'Dashboard' view (with KPIs and charts) and a 'Detailed Report' view (with formatted text). This hierarchical structure keeps the interface clean while allowing users to choose their desired level of detail, moving from a quick visual summary to an in-depth textual analysis. -->
+    <!-- Visualization & Content Choices: 
+        - Report Info: Key Metrics -> Goal: Inform -> Viz/Method: KPI Cards, Donut/Bar Charts (Chart.js) -> Interaction: Hover -> Justification: High-level visual summary.
+        - Report Info: Detailed Text Analysis -> Goal: Explain -> Viz/Method: Formatted Text Blocks (HTML/Tailwind Prose) -> Interaction: None -> Justification: Provides the full narrative context and detailed breakdown from the original report.
+    -->
+    <!-- CONFIRMATION: NO SVG graphics used. NO Mermaid JS used. -->
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f8fafc; /* slate-50 */
+        }
+        .chart-container {
+            position: relative;
+            height: 320px;
+            width: 100%;
+        }
+        @media (min-width: 768px) {
+            .chart-container {
+                height: 400px;
+            }
+        }
+        .kpi-value {
+            color: #0284c7; /* sky-600 */
+        }
+        .main-nav-btn {
+            transition: all 0.3s ease;
+        }
+        .main-nav-btn.active {
+            background-color: #0ea5e9; /* sky-500 */
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+        .main-nav-btn:not(.active):hover {
+            background-color: #f1f5f9; /* slate-100 */
+        }
+        .sub-nav-btn {
+            transition: all 0.2s ease-in-out;
+            border-bottom: 2px solid transparent;
+        }
+        .sub-nav-btn.active {
+            color: #0ea5e9; /* sky-500 */
+            border-bottom-color: #0ea5e9;
+        }
+        .sub-nav-btn:not(.active):hover {
+            color: #334155; /* slate-700 */
+        }
+        .prose {
+            max-width: none;
+        }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        
+        <header class="text-center mb-8">
+            <h1 class="text-3xl md:text-4xl font-bold text-slate-900">Student Expenditure Analysis</h1>
+            <p class="mt-2 text-lg text-slate-600">An interactive overview of academic expenses.</p>
+        </header>
+
+        <nav class="flex justify-center mb-8 bg-white p-2 rounded-lg shadow-sm max-w-md mx-auto">
+            <button id="main-nav-review" class="main-nav-btn active w-1/2 py-2 px-4 rounded-md font-semibold">2024-2025 Review</button>
+            <button id="main-nav-forecast" class="main-nav-btn w-1/2 py-2 px-4 rounded-md font-semibold">2025-2026 Forecast</button>
+        </nav>
+
+        <main>
+            <!-- 2024-2025 REVIEW SECTION -->
+            <section id="review-section">
+                <nav class="flex justify-center border-b mb-6 space-x-8">
+                    <button id="sub-nav-review-dashboard" class="sub-nav-btn active font-semibold pb-2">Dashboard</button>
+                    <button id="sub-nav-review-report" class="sub-nav-btn font-semibold pb-2">Detailed Report</button>
+                </nav>
+
+                <div id="review-dashboard-content">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-slate-800">2024-2025 Dashboard</h2>
+                        <p class="mt-1 text-md text-slate-500">A visual summary of all expenses incurred during the past academic year.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h3 class="font-semibold text-slate-600">Total Expenditure</h3>
+                            <p class="text-4xl font-bold mt-2 kpi-value">€39,032.57</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h3 class="font-semibold text-slate-600">Fixed Costs</h3>
+                            <p class="text-4xl font-bold mt-2 kpi-value">€28,045.00</p>
+                            <p class="text-sm text-slate-500 mt-1">Tuition, Rent & Fees</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h3 class="font-semibold text-slate-600">Variable Living Expenses</h3>
+                            <p class="text-4xl font-bold mt-2 kpi-value">€11,047.57</p>
+                            <p class="text-sm text-slate-500 mt-1">Based on logged expenses</p>
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 lg:grid-cols-5 gap-6">
+                        <div class="lg:col-span-3 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold mb-4 text-center">Living Expense Categories</h3>
+                            <div class="chart-container">
+                                <canvas id="categoriesChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="lg:col-span-2 bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold mb-4 text-center">Total Cost Breakdown</h3>
+                             <div class="chart-container">
+                                <canvas id="breakdownChart"></canvas>
+                            </div>
+                            <div class="mt-4 text-center border-t pt-4">
+                                 <h4 class="font-semibold text-slate-600">Key Insight</h4>
+                                 <p class="text-2xl font-bold mt-2 kpi-value">€78.79</p>
+                                 <p class="text-sm text-slate-500">Average Weekly Grocery Spend</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="review-report-content" class="hidden bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                    <article class="prose lg:prose-lg">
+                        <h2>2024-2025 Academic Year Expense Summary</h2>
+                        <h3>Overall Financial Summary</h3>
+                        <p>The total calculated cost for the 2024-2025 academic year amounts to <strong>€39,032.57</strong>. This figure encompasses all major educational and living costs.</p>
+                        <p>The expenditure can be broken down into two main types:</p>
+                        <ul>
+                            <li><strong>Fixed Costs:</strong> These are major, predictable expenses.
+                                <ul>
+                                    <li>Tuition Fee: €19,600.00</li>
+                                    <li>Total Rent: €8,085.00</li>
+                                    <li>Application Fee: €300.00</li>
+                                    <li><strong>Sub-total Fixed Costs: €28,045.00</strong></li>
+                                </ul>
+                            </li>
+                            <li><strong>Variable Living Expenses:</strong> These costs cover day-to-day living and are based on the detailed expense log provided.
+                                <ul>
+                                    <li>Total Logged Expenses: €11,047.57</li>
+                                    <li>Of this amount, €778.30 was personally covered for non-essential items, with the remaining €10,269.27 covered by sponsorship.</li>
+                                </ul>
+                            </li>
+                        </ul>
+                        <h3>Analysis of Living Expenses</h3>
+                        <p>A closer look at the variable living expenses reveals the following patterns:</p>
+                        <h4>Spending by Category</h4>
+                        <ul>
+                            <li><strong>Groceries:</strong> At €3,269.61, this was the largest category. Considering the approximately 41.5 weeks spent in the Netherlands, this averages to €78.79 per week.</li>
+                            <li><strong>Other expenses:</strong> This category totals €2,464.12 and includes a wide range of items.</li>
+                            <li><strong>Transport:</strong> Amounting to €2,221.34, this includes local transport and flights.</li>
+                            <li><strong>Memberships & Fees:</strong> This €830.68 includes gym memberships, sports clubs, etc.</li>
+                            <li><strong>Insurance:</strong> Health and liability insurance totaled €540.49 for the year.</li>
+                        </ul>
+                        <h4>Monthly Spending Patterns</h4>
+                        <p>Expenditure was not uniform throughout the year. Spending was highest in the initial months (August-September 2024), reflecting one-time setup costs. Spending dips correspond with periods of travel back home.</p>
+                    </article>
+                </div>
+            </section>
+
+            <!-- 2025-2026 FORECAST SECTION -->
+            <section id="forecast-section" class="hidden">
+                <nav class="flex justify-center border-b mb-6 space-x-8">
+                    <button id="sub-nav-forecast-dashboard" class="sub-nav-btn active font-semibold pb-2">Dashboard</button>
+                    <button id="sub-nav-forecast-report" class="sub-nav-btn font-semibold pb-2">Detailed Report</button>
+                </nav>
+
+                <div id="forecast-dashboard-content">
+                    <div class="text-center mb-8">
+                        <h2 class="text-2xl font-bold text-slate-800">2025-2026 Forecast Dashboard</h2>
+                        <p class="mt-1 text-md text-slate-500">An estimated visual budget for the upcoming 10.5-month period.</p>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md text-center">
+                            <h3 class="font-semibold text-slate-600">Est. Total Expenditure (10.5 mo)</h3>
+                            <p class="text-4xl font-bold mt-2 kpi-value">€35,771.03</p>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold mb-4 text-center">Projected Monthly Budget</h3>
+                            <div class="flex flex-wrap justify-around items-center text-center gap-4">
+                                <div><p class="font-semibold text-slate-600">Living</p><p class="text-3xl font-bold mt-1 kpi-value">€861.05</p></div>
+                                <div class="text-2xl font-light text-slate-400">+</div>
+                                <div><p class="font-semibold text-slate-600">Rent</p><p class="text-3xl font-bold mt-1 kpi-value">€660.00</p></div>
+                                <div class="text-2xl font-light text-slate-400">=</div>
+                                <div><p class="font-semibold text-slate-600">Total</p><p class="text-3xl font-bold mt-1 kpi-value">€1,521.05</p></div>
+                            </div>
+                        </div>
+                    </div>
+                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold mb-4 text-center">Forecasted Cost Breakdown</h3>
+                             <div class="chart-container max-w-md mx-auto">
+                                <canvas id="forecastBreakdownChart"></canvas>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-lg shadow-md">
+                            <h3 class="text-xl font-semibold mb-2">How We Calculated The Forecast</h3>
+                            <p class="text-slate-600 mb-4">To create a realistic budget, we started with last year's spending and made adjustments to exclude large, non-recurring purchases.</p>
+                            <ul class="space-y-3">
+                                <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">1.</span><div><h4 class="font-semibold">Started with 2024-25 Living Expenses</h4><p class="text-slate-500 text-sm">€11,047.57</p></div></li>
+                                <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">2.</span><div><h4 class="font-semibold">Removed One-Off Purchases</h4><p class="text-slate-500 text-sm">Excluded MacBook, bike, etc. (-€1,576.01)</p></div></li>
+                                 <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">3.</span><div><h4 class="font-semibold">Calculated Monthly Average</h4><p class="text-slate-500 text-sm">Resulted in a recurring monthly average of €861.05</p></div></li>
+                                 <li class="flex items-start"><span class="text-sky-500 font-bold text-xl mr-3">4.</span><div><h4 class="font-semibold">Projected for 10.5 Months</h4><p class="text-slate-500 text-sm">This average was multiplied by 10.5 to get the final living expense forecast.</p></div></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="forecast-report-content" class="hidden bg-white p-6 sm:p-8 rounded-lg shadow-md">
+                     <article class="prose lg:prose-lg">
+                        <h2>2025-2026 Academic Year Expense Guesstimate (10.5 Months)</h2>
+                        <h3>Overall Estimated Financial Forecast</h3>
+                        <p>The estimated total expenditure for the 10.5-month period from late September 2025 to early July 2026 is <strong>€35,771.03</strong>.</p>
+                        <p>This forecast is based on the following components:</p>
+                        <ul>
+                            <li><strong>Fixed Costs for the Period:</strong>
+                                <ul>
+                                    <li>Tuition Fee: €19,800.00</li>
+                                    <li>Rent & Utilities (10.5 months): €6,930.00 (€660/month * 10.5)</li>
+                                    <li><strong>Sub-total Fixed Costs: €26,730.00</strong></li>
+                                </ul>
+                            </li>
+                            <li><strong>Estimated Living Expenses (10.5 months): €9,041.03</strong></li>
+                        </ul>
+                        <h3>Derivation of Estimated Living Expenses</h3>
+                        <p>To create a realistic forecast, we have adjusted last year's spending to exclude significant one-time purchases and prorated the result for 10.5 months.</p>
+                        <ol>
+                            <li><strong>Starting Point:</strong> Total logged expenses from 2024-25 were €11,047.57.</li>
+                            <li><strong>Exclusions:</strong> We removed one-off costs like the MacBook, bike, and initial home setup (-€1,576.01).</li>
+                            <li><strong>Base Recurring Expenses:</strong> This leaves a base of €9,471.56 over 11 months, giving an average of €861.05 per month.</li>
+                            <li><strong>10.5-Month Forecast:</strong> Projecting this monthly average over a 10.5-month period gives the estimated living expense total of €9,041.03.</li>
+                        </ol>
+                        <h3>Projected Monthly Budget</h3>
+                        <p>Based on this forecast, you can plan your monthly budget as follows:</p>
+                        <ul>
+                            <li><strong>Average Monthly Living Expenses: €861.05</strong> (This is your estimated budget for groceries, transport, insurance, personal care, entertainment, etc.)</li>
+                            <li><strong>Average Total Monthly Cost (including rent/utilities): €1,521.05</strong> (€861.05 for living + €660 for rent/utilities)</li>
+                        </ul>
+                     </article>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const reviewData = {
+                categories: { labels: ['Groceries', 'Other expenses', 'Transport', 'Memberships & Fees', 'Insurance'], values: [3269.61, 2464.12, 2221.34, 830.68, 540.49] },
+                breakdown: { labels: ['Tuition Fee', 'Rent', 'Living Expenses', 'Application Fee'], values: [19600.00, 8085.00, 11047.57, 300.00] }
+            };
+            const forecastData = {
+                breakdown: { labels: ['Tuition Fee', 'Rent & Utilities', 'Living Expenses'], values: [19800.00, 6930.00, 9041.03] }
+            };
+
+            const mainNavReview = document.getElementById('main-nav-review');
+            const mainNavForecast = document.getElementById('main-nav-forecast');
+            const reviewSection = document.getElementById('review-section');
+            const forecastSection = document.getElementById('forecast-section');
+            
+            const subNavReviewDashboard = document.getElementById('sub-nav-review-dashboard');
+            const subNavReviewReport = document.getElementById('sub-nav-review-report');
+            const reviewDashboardContent = document.getElementById('review-dashboard-content');
+            const reviewReportContent = document.getElementById('review-report-content');
+            
+            const subNavForecastDashboard = document.getElementById('sub-nav-forecast-dashboard');
+            const subNavForecastReport = document.getElementById('sub-nav-forecast-report');
+            const forecastDashboardContent = document.getElementById('forecast-dashboard-content');
+            const forecastReportContent = document.getElementById('forecast-report-content');
+
+            let charts = {};
+            const chartBackgroundColor = ['#38bdf8', '#67e8f9', '#a5f3fc', '#cffafe', '#e0f2fe'];
+            const chartBorderColor = '#f8fafc';
+
+            function createChart(canvasId, type, data, options) {
+                if (charts[canvasId]) charts[canvasId].destroy();
+                const ctx = document.getElementById(canvasId).getContext('2d');
+                charts[canvasId] = new Chart(ctx, { type, data, options });
+            }
+
+            function initReviewCharts() {
+                createChart('categoriesChart', 'bar', {
+                    labels: reviewData.categories.labels,
+                    datasets: [{ label: 'Cost (€)', data: reviewData.categories.values, backgroundColor: chartBackgroundColor, borderColor: chartBorderColor, borderWidth: 2, borderRadius: 4 }]
+                }, { indexAxis: 'y', responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false }, tooltip: { callbacks: { label: (c) => `€${c.raw.toFixed(2)}` } } }, scales: { x: { beginAtZero: true, grid: { color: '#e2e8f0' } }, y: { grid: { display: false } } } });
+                
+                createChart('breakdownChart', 'doughnut', {
+                    labels: reviewData.breakdown.labels,
+                    datasets: [{ data: reviewData.breakdown.values, backgroundColor: chartBackgroundColor, borderColor: chartBorderColor, borderWidth: 4 }]
+                }, { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: €${c.raw.toFixed(2)}` } } } });
+            }
+
+            function initForecastChart() {
+                createChart('forecastBreakdownChart', 'doughnut', {
+                    labels: forecastData.breakdown.labels,
+                    datasets: [{ data: forecastData.breakdown.values, backgroundColor: chartBackgroundColor, borderColor: chartBorderColor, borderWidth: 4 }]
+                }, { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' }, tooltip: { callbacks: { label: (c) => `${c.label}: €${c.raw.toFixed(2)}` } } } });
+            }
+
+            mainNavReview.addEventListener('click', () => {
+                reviewSection.classList.remove('hidden');
+                forecastSection.classList.add('hidden');
+                mainNavReview.classList.add('active');
+                mainNavForecast.classList.remove('active');
+                if (!reviewDashboardContent.classList.contains('hidden')) initReviewCharts();
+            });
+
+            mainNavForecast.addEventListener('click', () => {
+                reviewSection.classList.add('hidden');
+                forecastSection.classList.remove('hidden');
+                mainNavReview.classList.remove('active');
+                mainNavForecast.classList.add('active');
+                if (!forecastDashboardContent.classList.contains('hidden')) initForecastChart();
+            });
+
+            subNavReviewDashboard.addEventListener('click', () => {
+                reviewDashboardContent.classList.remove('hidden');
+                reviewReportContent.classList.add('hidden');
+                subNavReviewDashboard.classList.add('active');
+                subNavReviewReport.classList.remove('active');
+                initReviewCharts();
+            });
+
+            subNavReviewReport.addEventListener('click', () => {
+                reviewDashboardContent.classList.add('hidden');
+                reviewReportContent.classList.remove('hidden');
+                subNavReviewDashboard.classList.remove('active');
+                subNavReviewReport.classList.add('active');
+            });
+
+            subNavForecastDashboard.addEventListener('click', () => {
+                forecastDashboardContent.classList.remove('hidden');
+                forecastReportContent.classList.add('hidden');
+                subNavForecastDashboard.classList.add('active');
+                subNavForecastReport.classList.remove('active');
+                initForecastChart();
+            });
+
+            subNavForecastReport.addEventListener('click', () => {
+                forecastDashboardContent.classList.add('hidden');
+                forecastReportContent.classList.remove('hidden');
+                subNavForecastDashboard.classList.remove('active');
+                subNavForecastReport.classList.add('active');
+            });
+
+            initReviewCharts();
+        });
+    </script>
+</body>
+</html>
